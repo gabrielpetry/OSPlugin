@@ -79,6 +79,7 @@ class RunCommand(ActionBase):
 
     def get_config_rows(self):
         entry_row = Adw.EntryRow(title=self.plugin_base.lm.get("run.entry.title"))
+        self.action_as_argument = self.plugin_base.lm.get("run.entry.action_as_argument", False)
         self.display_output_switch = Adw.SwitchRow(
             title=self.plugin_base.lm.get("run.display-output.title"),
             subtitle=self.plugin_base.lm.get("run.display-output.subtitle"))

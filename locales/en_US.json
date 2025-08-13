@@ -1,6 +1,7 @@
 {
     "run.entry.title": "Command:",
     "run.display-output.title": "Display Output",
+    "run.entry.action_as_argument": "Use action as argument",
     "run.display-output.subtitle": "This will wait until the command is finished",
     "run.detached.title": "Detached",
     "run.detached.subtitle": "Executes the command in a separate process",

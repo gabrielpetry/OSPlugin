@@ -115,13 +115,18 @@ class RunCommand(ActionBase):
         # Connect entry
         entry_row.connect("notify::text", self.on_change_command)
         self.display_output_switch.connect("notify::active", self.on_display_output_changed)
-        self.action_as_argument_switch.connect("notify::active", lambda s, _: setattr(self, "action_as_argument", s.get_active()))
+        self.action_as_argument_switch.connect("notify::active", self.on_action_as_argument_changed)
         self.detached_switch.connect("notify::active", self.on_detached_changed)
         self.auto_run_row.connect("changed", self.on_auto_run_changed)
         self.keep_auto_run_in_background.connect("notify::active", self.on_keep_auto_run_in_background_changed)
 
         return [entry_row, self.display_output_switch, self.action_as_argument_switch, self.detached_switch, self.auto_run_row, self.keep_auto_run_in_background]
-    
+
+    def on_action_as_argument_changed(self, switch, _):
+        settings = self.get_settings()
+        settings["action_as_argument"] = switch.get_active()
+        self.set_settings(settings)
+
     def on_auto_run_changed(self, spin):
         settings = self.get_settings()
         settings["auto_run"] = round(spin.get_value(), 1)

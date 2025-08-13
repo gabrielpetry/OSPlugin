@@ -21,7 +21,6 @@ class RunCommand(ActionBase):
 
         self.auto_run_timer: threading.Timer = None
         
-        self.action_as_argument = False
         self.action: str = ""
         self.registered_down: bool = False # Temporary workaround for an issue in the app causing the action to get the short_up event if it's on the same key, but different page as a "change page" action that triggers the change #TODO
 
@@ -165,8 +164,7 @@ class RunCommand(ActionBase):
         if is_in_flatpak():
             command = "flatpak-spawn --host " + command
 
-        args = command.split(" ")
-        if self.action_as_argument:
+        if self.get_settings()["action_as_argument"] and self.action:
             args += self.action
             
 

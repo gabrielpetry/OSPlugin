@@ -309,7 +309,7 @@ class SpecialKeyButton(Gtk.Box):
         """
         Why not use a Gtk.Button? Because the button doesn't support separate press and release event handling
         """
-        super().__init__(css_classes=["com_core447_OSPlugin-SpecialKeyButton"])
+        super().__init__(css_classes=["com_gabrielpetry_OSPlugin-SpecialKeyButton"])
 
         self.label = Gtk.Label(label=key_name, css_classes=["bold"])
         self.append(self.label)

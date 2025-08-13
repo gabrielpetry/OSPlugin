@@ -169,11 +169,11 @@ class RunCommand(ActionBase):
             
 
         if self.get_settings().get("detached", True):
-            p = multiprocessing.Process(target=subprocess.Popen, args=[command], kwargs={"shell": True, "start_new_session": True, "stdin": subprocess.DEVNULL, "stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL, "cwd": os.path.expanduser("~")})
+            p = multiprocessing.Process(target=subprocess.Popen, args=[args], kwargs={"shell": True, "start_new_session": True, "stdin": subprocess.DEVNULL, "stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL, "cwd": os.path.expanduser("~")})
             p.start()
             return ""
 
-        result = subprocess.Popen(command, shell=True, start_new_session=True, text=True, stdout=subprocess.PIPE, cwd=os.path.expanduser("~"))  # If cwd is not set in the flatpak /app/bin/StreamController cannot be found
+        result = subprocess.Popen(args=[args], shell=True, start_new_session=True, text=True, stdout=subprocess.PIPE, cwd=os.path.expanduser("~"))  # If cwd is not set in the flatpak /app/bin/StreamController cannot be found
 
         result.wait()
         return result.communicate()[0].rstrip()

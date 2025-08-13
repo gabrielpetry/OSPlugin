@@ -80,6 +80,9 @@ class RunCommand(ActionBase):
     def get_config_rows(self):
         entry_row = Adw.EntryRow(title=self.plugin_base.lm.get("run.entry.title"))
         self.action_as_argument = self.plugin_base.lm.get("run.entry.action_as_argument", False)
+        self.action_as_argument_switch = Adw.SwitchRow(title="Use action as argument",
+                                                         subtitle="Use the action as an argument for the command")
+        
         self.display_output_switch = Adw.SwitchRow(
             title=self.plugin_base.lm.get("run.display-output.title"),
             subtitle=self.plugin_base.lm.get("run.display-output.subtitle"))
@@ -104,6 +107,7 @@ class RunCommand(ActionBase):
         entry_row.set_text(command)
 
         self.display_output_switch.set_active(settings.get("display_output", False))
+        self.action_as_argument_switch.set_active(settings.get("action_as_argument", False))
         self.detached_switch.set_active(settings.get("detached", True))
         self.auto_run_row.set_value(settings.get("auto_run", 0))
 
@@ -112,11 +116,12 @@ class RunCommand(ActionBase):
         # Connect entry
         entry_row.connect("notify::text", self.on_change_command)
         self.display_output_switch.connect("notify::active", self.on_display_output_changed)
+        self.action_as_argument_switch.connect("notify::active", lambda s, _: setattr(self, "action_as_argument", s.get_active()))
         self.detached_switch.connect("notify::active", self.on_detached_changed)
         self.auto_run_row.connect("changed", self.on_auto_run_changed)
         self.keep_auto_run_in_background.connect("notify::active", self.on_keep_auto_run_in_background_changed)
 
-        return [entry_row, self.display_output_switch, self.detached_switch, self.auto_run_row, self.keep_auto_run_in_background]
+        return [entry_row, self.display_output_switch, self.action_as_argument_switch, self.detached_switch, self.auto_run_row, self.keep_auto_run_in_background]
     
     def on_auto_run_changed(self, spin):
         settings = self.get_settings()

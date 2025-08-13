@@ -173,7 +173,7 @@ class RunCommand(ActionBase):
             p.start()
             return ""
 
-        result = subprocess.Popen(args=[args], shell=True, start_new_session=True, text=True, stdout=subprocess.PIPE, cwd=os.path.expanduser("~"))  # If cwd is not set in the flatpak /app/bin/StreamController cannot be found
+        result = subprocess.Popen(args, shell=True, start_new_session=True, text=True, stdout=subprocess.PIPE, cwd=os.path.expanduser("~"))  # If cwd is not set in the flatpak /app/bin/StreamController cannot be found
 
         result.wait()
         return result.communicate()[0].rstrip()

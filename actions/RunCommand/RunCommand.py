@@ -31,9 +31,11 @@ class RunCommand(ActionBase):
     def stop_timer(self):
         if self.auto_run_timer is not None:
             self.auto_run_timer.cancel()
+        self.set_top_label("paused")
 
     def start_timer(self):
         self.stop_timer()
+        self.set_top_label("")
         settings = self.get_settings()
         if settings.get("auto_run", 0) <= 0:
             return
@@ -49,26 +51,32 @@ class RunCommand(ActionBase):
                 return
             else:
                 self.registered_down = True
-                self.action = "DOWN"
         elif event == Input.Key.Events.UP:
             self.registered_down = False
         # End workaround
 
+        if event == Input.Key.Events.UP:
+            self.action = "CLICK"
+        if event == Input.Key.Events.SHORT_UP:
+            self.action = "CLICK"
+
         if self.get_settings().get("auto_run", 0) <= 0:
             if event == Input.Key.Events.DOWN:
                 self.execute()
-        else:
+        else: # auto run enabled
             if event == Input.Key.Events.HOLD_START:
                 if self.auto_run_timer is not None:
                     self.stop_timer()
             elif event == Input.Key.Events.SHORT_UP:
-                self.execute()
+                self.execute(True)  # Restart timer after executing command
+
 
     def execute(self, restart_timer: bool = False):
         self.stop_timer()
         settings = self.get_settings()
 
         result = self.run_command(settings.get("command", None))
+        self.action = ""
         if settings.get("display_output", False):
             self.set_center_label(result)
 
@@ -170,15 +178,14 @@ class RunCommand(ActionBase):
             command = "flatpak-spawn --host " + command
 
         if self.get_settings()["action_as_argument"] and self.action:
-            args += self.action
-            
+            command = command + " " + self.action
 
         if self.get_settings().get("detached", True):
-            p = multiprocessing.Process(target=subprocess.Popen, args=[args], kwargs={"shell": True, "start_new_session": True, "stdin": subprocess.DEVNULL, "stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL, "cwd": os.path.expanduser("~")})
+            p = multiprocessing.Process(target=subprocess.Popen, args=[command], kwargs={"shell": True, "start_new_session": True, "stdin": subprocess.DEVNULL, "stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL, "cwd": os.path.expanduser("~")})
             p.start()
             return ""
 
-        result = subprocess.Popen(args, shell=True, start_new_session=True, text=True, stdout=subprocess.PIPE, cwd=os.path.expanduser("~"))  # If cwd is not set in the flatpak /app/bin/StreamController cannot be found
+        result = subprocess.Popen(command, shell=True, start_new_session=True, text=True, stdout=subprocess.PIPE, cwd=os.path.expanduser("~"))  # If cwd is not set in the flatpak /app/bin/StreamController cannot be found
 
         result.wait()
         return result.communicate()[0].rstrip()
